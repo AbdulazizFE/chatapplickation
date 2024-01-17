@@ -7,16 +7,17 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 app.use(express.static('public'));
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
-  });
+
 io.on('connection', (socket) => {
   console.log('A user connected');
 
   // Listen for messages
-  socket.on('chat message', (msg) => {
-    // Broadcast the message to all connected clients
-    io.emit('chat message', msg);
+  socket.on('chat message', (data) => {
+    // Get the current timestamp
+    const timestamp = new Date().toLocaleTimeString();
+
+    // Broadcast the message to all connected clients with name, message, and timestamp
+    io.emit('chat message', { name: data.name, message: data.message, timestamp });
   });
 
   // Handle disconnection
