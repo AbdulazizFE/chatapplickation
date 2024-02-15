@@ -1,0 +1,11 @@
+.list-group {
+  list-style: none;
+  border: 1px solid gray;
+  padding: 5px;
+  height: 200px;
+  overflow: scroll;
+}
+
+.list-group li {
+  padding-bottom: 10px;
+}

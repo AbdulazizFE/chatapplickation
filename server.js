@@ -7,24 +7,28 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 app.use(express.static('public'));
-
+// Listen for user connection with room ID
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  // Listen for messages
-  socket.on('chat message', (data) => {
-    // Get the current timestamp
-    const timestamp = new Date().toLocaleTimeString();
-
-    // Broadcast the message to all connected clients with name, message, and timestamp
-    io.emit('chat message', { name: data.name, message: data.message, timestamp });
+  // Listen for user input of room ID
+  socket.on('join room', (roomID) => {
+    socket.join(roomID);
+    console.log(`User joined room ${roomID}`);
   });
 
-  // Handle disconnection
+  // Listen for messages in a specific room
+  socket.on('chat message', (data) => {
+    const timestamp = new Date().toLocaleTimeString();
+    // Broadcast the message to all clients in the same room
+    io.to(data.roomID).emit('chat message', { name: data.name, message: data.message, timestamp });
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
